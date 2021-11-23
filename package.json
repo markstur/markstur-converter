@@ -28,7 +28,7 @@
     "lintfix:json": "eslint --fix . --ext .json",
     "lintfix:js": "eslint --fix . --ext .js",
     "lintfix:ts": "eslint --fix . --ext .ts",
-    "test": "jest --coverage",
+    "test": "jest --coverage && npm run lint",
     "tdd": "jest --watch",
     "prebuild": "npm run clean",
     "build": "tsc",
