@@ -1,4 +1,4 @@
-import {parseCsvString} from '../../src/util/string-util';
+import { parseCsvString } from '../../src/util/string-util';
 
 describe('string-util', () => {
   test('canary verifies test infrastructure', () => {
@@ -44,7 +44,10 @@ describe('string-util', () => {
         test('should trim the value', () => {
           const value1 = '  value with spaces   ';
           const value2 = ' value2  ';
-          expect(parseCsvString(`${value1},${value2}`)).toEqual([value1.trim(), value2.trim()]);
+          expect(parseCsvString(`${value1},${value2}`)).toEqual([
+            value1.trim(),
+            value2.trim(),
+          ]);
         });
       });
     });

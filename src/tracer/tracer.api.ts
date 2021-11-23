@@ -1,4 +1,3 @@
-import {Tracer} from 'opentracing';
+import { Tracer } from 'opentracing';
 
-export abstract class TracerApi extends Tracer {
-}
+export abstract class TracerApi extends Tracer {}

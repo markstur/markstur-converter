@@ -1,4 +1,4 @@
-import {LoggerApi} from '../../src/logger';
+import { LoggerApi } from '../../src/logger';
 import Mock = jest.Mock;
 
 class MockLogger extends LoggerApi {
@@ -15,7 +15,7 @@ class MockLogger extends LoggerApi {
 
 describe('logger.api', () => {
   test('canary verifies test infrastructure', () => {
-      expect(true).toEqual(true);
+    expect(true).toEqual(true);
   });
 
   describe('given LoggerApi.time()', () => {
@@ -25,13 +25,17 @@ describe('logger.api', () => {
         const action = 'action';
         const duration = 500;
 
-        await promiseTimeout(() => {return}, duration);
+        await promiseTimeout(() => {
+          return;
+        }, duration);
 
         const logger: LoggerApi = new MockLogger();
         logger.time(action, start);
 
         expect((logger.info as Mock).mock.calls[0][1].action).toEqual(action);
-        expect((logger.info as Mock).mock.calls[0][1].duration).toBeGreaterThanOrEqual(duration);
+        expect(
+          (logger.info as Mock).mock.calls[0][1].duration
+        ).toBeGreaterThanOrEqual(duration);
       });
     });
   });

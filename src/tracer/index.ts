@@ -1,4 +1,4 @@
-import {Container} from 'typescript-ioc';
+import { Container } from 'typescript-ioc';
 
 export * from './tracer.api';
 

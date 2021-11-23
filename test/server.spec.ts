@@ -1,11 +1,11 @@
-import {ApiServer} from '../src/server';
-import {Application} from 'express';
+import { ApiServer } from '../src/server';
+import { Application } from 'express';
 import * as http from 'http';
 import Mock = jest.Mock;
 
 describe('server', () => {
   test('canary verifies test infrastructure', () => {
-      expect(true).toEqual(true);
+    expect(true).toEqual(true);
   });
 
   describe('given ApiServer', () => {
@@ -37,15 +37,18 @@ describe('server', () => {
             address: jest.fn(),
           } as any;
 
-          (apiServer.getApp().listen as Mock).mockImplementation((port: number, callback: (err?) => void) => {
-            setTimeout(() => {
-              callback();
-            }, 2);
+          (apiServer.getApp().listen as Mock).mockImplementation(
+            (port: number, callback: (err?) => void) => {
+              setTimeout(() => {
+                callback();
+              }, 2);
 
-            return server;
-          });
+              return server;
+            }
+          );
           (server.address as Mock).mockReturnValue({
-            address: '::', port: 1234
+            address: '::',
+            port: 1234,
           });
 
           expect(await apiServer.start()).toBe(apiServer);
@@ -74,15 +77,18 @@ describe('server', () => {
             address: jest.fn(),
           } as any;
 
-          (apiServer.getApp().listen as Mock).mockImplementation((port: number, callback: (err?) => void) => {
-            setTimeout(() => {
-              callback();
-            }, 2);
+          (apiServer.getApp().listen as Mock).mockImplementation(
+            (port: number, callback: (err?) => void) => {
+              setTimeout(() => {
+                callback();
+              }, 2);
 
-            return server;
-          });
+              return server;
+            }
+          );
           (server.address as Mock).mockReturnValue({
-            address: 'localhost', port: 1234
+            address: 'localhost',
+            port: 1234,
           });
           (server.close as Mock).mockImplementation((callback: () => void) => {
             callback();

@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs';
-import {VerifierOptions} from '@pact-foundation/pact';
-import {Publisher, PublisherOptions} from '@pact-foundation/pact-node';
+import { VerifierOptions } from '@pact-foundation/pact';
+import { Publisher, PublisherOptions } from '@pact-foundation/pact-node';
 
 import * as config from '../package.json';
 
@@ -10,16 +10,19 @@ const opts: VerifierOptions = config.pact as any;
 const pactBroker = process.env.PACTBROKER_URL || opts.pactBrokerUrl;
 
 async function publishPact(): Promise<void> {
-
   if (!pactBroker) {
     console.log('No pact broker configured...');
     return;
   }
 
-  const pactFiles: string[] = await listPactFiles(path.join(__dirname, '../pacts'));
+  const pactFiles: string[] = await listPactFiles(
+    path.join(__dirname, '../pacts')
+  );
 
   if (pactFiles.length == 0) {
-    console.log('No pact files in pact directory: ' + path.join(__dirname, '../pacts'));
+    console.log(
+      'No pact files in pact directory: ' + path.join(__dirname, '../pacts')
+    );
     return;
   }
 
@@ -48,13 +51,12 @@ async function listPactFiles(pactDir: string): Promise<string[]> {
         return;
       }
 
-      resolve(items.map(item => path.join(pactDir, item)));
+      resolve(items.map((item) => path.join(pactDir, item)));
     });
   });
 }
 
-publishPact()
-  .catch(err => {
-    console.error('Error publishing pact', err);
-    process.exit(1);
-  });
+publishPact().catch((err) => {
+  console.error('Error publishing pact', err);
+  process.exit(1);
+});

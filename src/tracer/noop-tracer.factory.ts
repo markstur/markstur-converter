@@ -1,9 +1,8 @@
-import {ObjectFactory} from 'typescript-ioc';
-import {initGlobalTracer, Tracer} from 'opentracing';
+import { ObjectFactory } from 'typescript-ioc';
+import { initGlobalTracer, Tracer } from 'opentracing';
 
 let tracer: Tracer;
 function initTracer(): Tracer {
-
   const tracer: Tracer = new Tracer();
 
   initGlobalTracer(tracer);
@@ -17,6 +16,6 @@ const noopTracerFactory: ObjectFactory = () => {
   }
 
   return tracer;
-}
+};
 
 export default noopTracerFactory;

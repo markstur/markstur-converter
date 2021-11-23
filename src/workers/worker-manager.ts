@@ -1,7 +1,7 @@
-import {WorkerApi} from './worker.api';
-import {Container, ContainerConfiguration, Inject} from 'typescript-ioc';
-import {LoggerApi} from '../logger';
-import {forkJoin, Observable} from 'rxjs';
+import { WorkerApi } from './worker.api';
+import { Container, ContainerConfiguration, Inject } from 'typescript-ioc';
+import { LoggerApi } from '../logger';
+import { forkJoin, Observable } from 'rxjs';
 
 export abstract class WorkerManager {
   abstract registerWorker(worker: WorkerApi): WorkerApi;
@@ -34,17 +34,24 @@ class WorkerManagerImpl implements WorkerManager {
 
   async start(): Promise<any> {
     this.logger.info('starting workers');
-    const observables: Observable<any>[] = this.workers.map(worker => worker.start());
+    const observables: Observable<any>[] = this.workers.map((worker) =>
+      worker.start()
+    );
 
-    return forkJoin(observables).toPromise().then(result => 'done');
+    return forkJoin(observables)
+      .toPromise()
+      .then((result) => 'done');
   }
 
   async stop(): Promise<any> {
     this.logger.info('stopping workers');
-    const observables: Observable<any>[] = this.workers.map(worker => worker.stop());
+    const observables: Observable<any>[] = this.workers.map((worker) =>
+      worker.stop()
+    );
 
-    return forkJoin(observables).toPromise().then(result => 'stopped');
-
+    return forkJoin(observables)
+      .toPromise()
+      .then((result) => 'stopped');
   }
 }
 
@@ -52,7 +59,7 @@ export const config: ContainerConfiguration[] = [
   {
     bind: WorkerManager,
     to: WorkerManagerImpl,
-  }
+  },
 ];
 
 export const workerManager: WorkerManager = Container.get(WorkerManagerImpl);

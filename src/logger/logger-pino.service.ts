@@ -1,9 +1,9 @@
-import {default as pino} from 'pino';
-import {default as expressPino} from 'express-pino-logger';
+import { default as pino } from 'pino';
+import { default as expressPino } from 'express-pino-logger';
 
-import {LoggerApi} from './logger.api';
-import {getNamespace} from 'cls-hooked';
-import {TraceConstants} from '../util/opentracing/trace-constants';
+import { LoggerApi } from './logger.api';
+import { getNamespace } from 'cls-hooked';
+import { TraceConstants } from '../util/opentracing/trace-constants';
 
 // tslint:disable
 class ChildLogger extends LoggerApi {
@@ -70,10 +70,13 @@ class ChildLogger extends LoggerApi {
   child(component: string): LoggerApi {
     const clsNamespace = getNamespace(TraceConstants.NAMESPACE);
 
-    const traceContext = clsNamespace ? clsNamespace.get(TraceConstants.TRACE_CONTEXT) : {};
+    const traceContext = clsNamespace
+      ? clsNamespace.get(TraceConstants.TRACE_CONTEXT)
+      : {};
 
-    return new ChildLogger(this.logger.child(
-      Object.assign({component}, traceContext)));
+    return new ChildLogger(
+      this.logger.child(Object.assign({ component }, traceContext))
+    );
   }
 
   apply(app: { use: (app: any) => void }): void {

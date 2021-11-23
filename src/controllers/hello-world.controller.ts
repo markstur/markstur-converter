@@ -1,11 +1,10 @@
-import {GET, Path, PathParam} from 'typescript-rest';
-import {Inject} from 'typescript-ioc';
-import {HelloWorldApi} from '../services';
-import {LoggerApi} from '../logger';
+import { GET, Path, PathParam } from 'typescript-rest';
+import { Inject } from 'typescript-ioc';
+import { HelloWorldApi } from '../services';
+import { LoggerApi } from '../logger';
 
 @Path('/hello')
 export class HelloWorldController {
-
   @Inject
   service: HelloWorldApi;
   @Inject
