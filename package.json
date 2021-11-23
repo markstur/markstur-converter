@@ -10,12 +10,24 @@
     "port": 3000,
     "contextRoot": ""
   },
+  "eslintConfig": {
+    "extends": [
+      "prettier"
+    ]
+  },
   "pact": {
     "providerBaseUrl": "",
     "pactBrokerUrl": ""
   },
   "scripts": {
     "clean": "rimraf dist",
+    "lint": "npm run lint:json && npm run lint:js && npm run lint:ts",
+    "lint:json": "eslint . --ext .json",
+    "lint:js": "eslint . --ext .js",
+    "lint:ts": "eslint . --ext .ts",
+    "lintfix:json": "eslint --fix . --ext .json",
+    "lintfix:js": "eslint --fix . --ext .js",
+    "lintfix:ts": "eslint --fix . --ext .ts",
     "test": "jest --coverage",
     "tdd": "jest --watch",
     "prebuild": "npm run clean",
@@ -64,7 +76,13 @@
     "@types/pino": "^6.3.11",
     "@types/superagent": "^4.1.12",
     "@types/supertest": "^2.0.11",
+    "@typescript-eslint/eslint-plugin": "^5.4.0",
+    "@typescript-eslint/parser": "^5.4.0",
     "babel-jest": "^27.1.1",
+    "eslint": "^8.3.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-jest": "^25.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
     "jest": "^27.1.1",
     "jest-plugin-context": "^2.9.0",
     "jest-sonar-reporter": "^2.0.0",
