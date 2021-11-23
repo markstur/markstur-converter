@@ -1,5 +1,4 @@
-
-import {Observable} from 'rxjs';
+import { Observable } from 'rxjs';
 
 // tslint:disable:no-any
 export abstract class WorkerApi {

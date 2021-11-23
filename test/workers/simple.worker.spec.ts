@@ -1,24 +1,20 @@
-import {Container} from 'typescript-ioc';
-import {SimpleWorker} from '../../src/workers';
-import {SimpleWorkerConfig} from '../../src/config/simple-worker.config';
+import { Container } from 'typescript-ioc';
+import { SimpleWorker } from '../../src/workers';
+import { SimpleWorkerConfig } from '../../src/config/simple-worker.config';
 import Mock = jest.Mock;
-import {LoggerApi, NoopLoggerService} from '../../src/logger';
+import { LoggerApi, NoopLoggerService } from '../../src/logger';
 
 describe('simple.worker', () => {
   test('canary verifies test infrastructure', () => {
-      expect(true).toEqual(true);
+    expect(true).toEqual(true);
   });
 
   describe('given SimpleWorker', () => {
     let worker: SimpleWorker;
     let writeLogMock: Mock;
     beforeEach(() => {
-      Container
-        .bind(SimpleWorkerConfig)
-        .factory(() => ({runInterval: 500}));
-      Container
-        .bind(LoggerApi)
-        .to(NoopLoggerService);
+      Container.bind(SimpleWorkerConfig).factory(() => ({ runInterval: 500 }));
+      Container.bind(LoggerApi).to(NoopLoggerService);
 
       worker = Container.get(SimpleWorker);
 
@@ -33,7 +29,9 @@ describe('simple.worker', () => {
       test('then run until stopped', async () => {
         const observable = worker.start();
 
-        await promiseTimeout(() => {return}, 600);
+        await promiseTimeout(() => {
+          return;
+        }, 600);
 
         await worker.stop().toPromise();
 

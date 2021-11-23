@@ -1,12 +1,11 @@
-import {GET, Path} from 'typescript-rest';
+import { GET, Path } from 'typescript-rest';
 
 @Path('/health')
 export class HealthController {
-
   @GET
-  async healthCheck(): Promise<{status: string;}> {
+  async healthCheck(): Promise<{ status: string }> {
     return {
-      status: 'UP'
+      status: 'UP',
     };
   }
 }
