@@ -22,6 +22,7 @@ module.exports = {
   },
   plugins: ['@typescript-eslint', 'jest', 'prettier'],
   rules: {
+    '@typescript-eslint/no-explicit-any': 'off',
     'prettier/prettier': 'error',
   },
   overrides: [
