@@ -12,7 +12,7 @@ FROM registry.access.redhat.com/ubi8/nodejs-16-minimal:1-6
 # USER root
 # RUN dnf -y update-minimal --security --sec-severity=Important --sec-severity=Critical && dnf clean all
 
-USER default
+USER 1001
 
 LABEL name="ibm/markstur-converter" \
       vendor="IBM" \
