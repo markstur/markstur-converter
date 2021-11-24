@@ -1,4 +1,4 @@
-import { HelloWorldApi } from './hello-world.api';
+import { HelloWorldApi } from '.';
 import { Inject } from 'typescript-ioc';
 import { LoggerApi } from '../logger';
 
