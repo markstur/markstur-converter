@@ -1,8 +1,8 @@
 {
-  "name": "template-node-typescript",
+  "name": "markstur-converter",
   "version": "1.0.0",
-  "org": "my-org",
-  "description": "Code pattern for starting a typescript-based microservice",
+  "org": "IBM",
+  "description": "Roman numeral converter service in a typescript-based microservice",
   "main": "index.js",
   "config": {
     "protocol": "http",
@@ -97,6 +97,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ibm-garage-cloud/template-node-typescript.git"
+    "url": "https://github.com/markstur/markstur-converter.git"
   }
 }
