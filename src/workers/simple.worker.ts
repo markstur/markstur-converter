@@ -1,4 +1,4 @@
-import { Container, Inject, Singleton } from 'typescript-ioc';
+import { Container, Inject } from 'typescript-ioc';
 import Timeout = NodeJS.Timeout;
 
 import { WorkerApi } from './worker.api';

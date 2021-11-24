@@ -40,7 +40,7 @@ class WorkerManagerImpl implements WorkerManager {
 
     return forkJoin(observables)
       .toPromise()
-      .then((result) => 'done');
+      .then(() => 'done');
   }
 
   async stop(): Promise<any> {
@@ -51,7 +51,7 @@ class WorkerManagerImpl implements WorkerManager {
 
     return forkJoin(observables)
       .toPromise()
-      .then((result) => 'stopped');
+      .then(() => 'stopped');
   }
 }
 

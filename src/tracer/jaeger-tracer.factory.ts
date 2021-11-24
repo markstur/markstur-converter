@@ -6,11 +6,11 @@ import {
   TracingOptions,
   ZipkinB3TextMapCodec,
 } from 'jaeger-client';
-import { FORMAT_HTTP_HEADERS, initGlobalTracer, Tracer } from 'opentracing';
+import { FORMAT_HTTP_HEADERS, initGlobalTracer } from 'opentracing';
 
 import { LoggerApi } from '../logger';
 
-const packageConfig = require('../../package.json');
+import packageConfig = require('../../package.json');
 
 let tracer: JaegerTracer;
 function initTracer(): JaegerTracer {
