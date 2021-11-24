@@ -79,7 +79,7 @@ export class ApiServer {
    * @returns {Promise<any>}
    */
   public async start(): Promise<ApiServer> {
-    return new Promise<ApiServer>((resolve, reject) => {
+    return new Promise<ApiServer>((resolve) => {
       this.server = this.app.listen(this.PORT, () => {
         const addressInfo = this.server.address() as AddressInfo;
 

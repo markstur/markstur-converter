@@ -1,6 +1,6 @@
+/* eslint-disable */
 import { LoggerApi } from './logger.api';
 
-// tslint:disable
 export class NoopLoggerService extends LoggerApi {
   log(message: string, context?: object): void {}
   info(message: string, context?: object): void {}
