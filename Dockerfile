@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi8/nodejs-16-minimal:latest AS builder
+FROM registry.access.redhat.com/ubi8/nodejs-16-minimal:1-6 AS builder
 
 WORKDIR /opt/app-root/src
 
@@ -6,7 +6,7 @@ COPY . .
 
 RUN ls -lA && npm ci && npm run build
 
-FROM registry.access.redhat.com/ubi8/nodejs-16-minimal:latest
+FROM registry.access.redhat.com/ubi8/nodejs-16-minimal:1-6
 
 ## Uncomment the below lines to update image security content if any
 # USER root
