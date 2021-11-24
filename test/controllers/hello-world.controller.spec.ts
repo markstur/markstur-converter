@@ -38,9 +38,13 @@ describe('hello-world.controller', () => {
     });
 
     test('should return "Hello, World!"', async () => {
-      await request(app).get('/hello').expect(200).then((r) => {
-        expect(r.text).toEqual(expectedResponse);
-    })});
+      await request(app)
+        .get('/hello')
+        .expect(200)
+        .then((r) => {
+          expect(r.text).toEqual(expectedResponse);
+        });
+    });
   });
 
   describe('Given /hello/Johnny', () => {
@@ -51,8 +55,12 @@ describe('hello-world.controller', () => {
     });
 
     test('should return "Hello, Johnny!"', async () => {
-      await request(app).get(`/hello/${name}`).expect(200).then((r) => {
-        expect(r.text).toEqual(name);
-      })});
+      await request(app)
+        .get(`/hello/${name}`)
+        .expect(200)
+        .then((r) => {
+          expect(r.text).toEqual(name);
+        });
     });
+  });
 });
