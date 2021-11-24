@@ -43,7 +43,7 @@
     "sonarqube:scan": "npm run test && ts-node test/sonarqube-scan"
   },
   "author": "",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "dependencies": {
     "cls-hooked": "^4.2.2",
     "cors": "^2.8.5",
