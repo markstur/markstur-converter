@@ -1,21 +1,27 @@
+> This is the original README.md from the starter kit template repo
 
-<p>
+<p align="center">
+    <a href="http://kitura.io/">
+        <img src="https://landscape.cncf.io/logos/ibm-member.svg" height="100" alt="IBM Cloud">
+    </a>
+</p>
+
+<p align="center">
+    <a href="https://cloud.ibm.com">
+    <img src="https://img.shields.io/badge/IBM%20Cloud-powered-blue.svg" alt="IBM Cloud">
+    </a>
     <img src="https://img.shields.io/badge/platform-node-lightgrey.svg?style=flat" alt="platform">
     <img src="https://img.shields.io/badge/license-Apache2-blue.svg?style=flat" alt="Apache 2">
 </p>
 
-# Roman numeral converter service
+# TypeScript Microservice or Backend for Frontend with Node.js
 
-REST services:
+This Starter Kit Template can be the foundation of a TypeScript Node.js Microservice or Backend for Frontend.
 
-1. to-roman
-2. to-number
 
-## TypeScript Microservice with Node.js
+## Features
 
-Based on the template-node-typescript starter kit template.
-
-The template provides the following:
+The starter kit provides the following features:
 
 - Built with [TypeScript](https://www.typescriptlang.org/)
 - REST services using `typescript-rest` decorators
@@ -28,7 +34,10 @@ The template provides the following:
 
 #### Native Application Development
 
-Install the latest [Node.js](https://nodejs.org/en/download/) LTS version.
+Install the latest [Node.js](https://nodejs.org/en/download/) 6+ LTS version.
+
+After you have created a new git repo from this git template, remember to rename the project.
+Edit `package.json` and change the default name to the name you used to create the template.
 
 Once the Node toolchain has been installed, you can download the project dependencies with:
 
@@ -38,9 +47,24 @@ npm run build
 npm run start
 ```
 
-### Deploying with CI/CD
+### Deploying 
 
-Refer to Cloud Native Toolkit documentation.
+Make sure you are logged into the IBM Cloud using the IBM Cloud CLI and have access 
+to your development cluster.
+
+```$bash
+npm i -g @ibmgaragecloud/cloud-native-toolkit-cli
+ibmcloud login -a cloud.ibm.com -r <region> -g <resource group>
+ibmcloud ks cluster-config --cluster <cluster-name>
+kubectl get pods
+
+```
+
+Use the IBM Garage for Cloud CLI to register the GIT Repo with Jenkins environment 
+```$bash
+oc sync <project> --dev
+oc pipeline 
+```
 
 ## More Details
 
