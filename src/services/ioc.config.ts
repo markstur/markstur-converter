@@ -1,8 +1,8 @@
-import {ContainerConfiguration, Scope} from 'typescript-ioc';
-import {HelloWorldApi} from './hello-world.api';
-import {HelloWorldService} from './hello-world.service';
-import {ConverterApi} from './converter.api';
-import {ConverterService} from './converter.service';
+import { ContainerConfiguration, Scope } from 'typescript-ioc';
+import { HelloWorldApi } from './hello-world.api';
+import { HelloWorldService } from './hello-world.service';
+import { ConverterApi } from './converter.api';
+import { ConverterService } from './converter.service';
 
 const config: ContainerConfiguration[] = [
   {
