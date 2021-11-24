@@ -37,9 +37,10 @@ describe('hello-world.controller', () => {
       mockGreeting.mockReturnValueOnce(Promise.resolve(expectedResponse));
     });
 
-    test('should return "Hello, World!"', (done) => {
-      request(app).get('/hello').expect(200).expect(expectedResponse, done);
-    });
+    test('should return "Hello, World!"', async () => {
+      await request(app).get('/hello').expect(200).then((r) => {
+        expect(r.text).toEqual(expectedResponse);
+    })});
   });
 
   describe('Given /hello/Johnny', () => {
@@ -49,8 +50,9 @@ describe('hello-world.controller', () => {
       mockGreeting.mockImplementation((name) => name);
     });
 
-    test('should return "Hello, Johnny!"', (done) => {
-      request(app).get(`/hello/${name}`).expect(200).expect(name, done);
+    test('should return "Hello, Johnny!"', async () => {
+      await request(app).get(`/hello/${name}`).expect(200).then((r) => {
+        expect(r.text).toEqual(name);
+      })});
     });
-  });
 });

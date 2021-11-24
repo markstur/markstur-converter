@@ -17,12 +17,9 @@ describe('health.controller', () => {
   });
 
   describe('Given /health', () => {
-    test('should return 200 status', () => {
-      return request(app).get('/health').expect(200);
-    });
-
-    test('should return {status: "UP:}', () => {
-      return request(app).get('/health').expect({ status: 'UP' });
+    test('should return 200 and {status: "UP:}', async () => {
+      await request(app).get('/health').expect(200).then( r => {
+        expect(r.body).toStrictEqual( { status: 'UP' }) })
     });
   });
 });
