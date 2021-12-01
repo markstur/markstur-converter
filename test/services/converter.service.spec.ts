@@ -205,7 +205,6 @@ describe('Converter service', () => {
   // TODO: Not really testing for increasing letters to the right (enforcing left-to-right rules)
   // TODO: Not testing for repeating a subtraction car like IIIV.
   // TODO: Not testing for repeating a subtraction car like IIIV.
-
   // TODO: *** The internet found some more rules that were not part of the assignment ***
   // TODO: The letters I, X, C can be repeated thrice in succession. Additionally, L, V, D cannot be repeated or the number is considered to be invalid.
   // TODO: If a lower value digit is written to the left of a higher value digit, it is subtracted.
@@ -280,7 +279,9 @@ describe('Converter service', () => {
   describe('Invalid chars result in a BadRequestError', () => {
     context('when given Z', () => {
       test('Z gets BadRequestError', () => {
-        expect(() => service.toNumber('Z')).toThrow(BadRequestError);
+        expect(() => service.toNumber('Z')).toThrow(
+          new BadRequestError("Bad character 'Z'")
+        );
       });
     });
   });

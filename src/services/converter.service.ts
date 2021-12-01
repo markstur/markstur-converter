@@ -88,27 +88,16 @@ export class ConverterService implements ConverterApi {
   #numberToRomanUsingMath(n: number): string {
     let remainder: number = n; // NOTE: Using number instead of bigint means we need to be careful of float ops
 
-    // List of chars/combos to loop through in order (big to small) for calculation.
-    const romans: number[] = [M, CM, D, CD, C, XC, L, XL, X, IX, V, IV, I];
-
-    // How many of each Roman character/combo (above) we need (big to small).
-    const times: number[] = [];
-
-    // Determine how many times each Roman character/combo is needed.
-    romans.forEach((r) => {
-      times.push(Math.trunc(remainder / r));
-      remainder = remainder % r;
-    });
-
     // The Roman numeral string to return
-    let ret = '';
+    let roman = '';
 
-    // Build the Roman numeral string to return
-    times.forEach((count, idx) => {
-      ret += numberToRoman[romans[idx]].repeat(count);
+    // Repeat each Roman character/combo as needed (big to small).
+    [M, CM, D, CD, C, XC, L, XL, X, IX, V, IV, I].forEach((value) => {
+      roman += numberToRoman[value].repeat(Math.trunc(remainder / value));
+      remainder = remainder % value;
     });
 
-    return ret;
+    return roman;
   }
 
   /**
@@ -117,60 +106,76 @@ export class ConverterService implements ConverterApi {
    */
   #romanToNumberUsingMath(roman: string): number {
     let ret = 0;
-    let last = Number.MAX_VALUE;
+    let least = Number.MAX_VALUE;
+
+    function validatingRomanToNumber(r: string) {
+      const n = romanToNumber[r];
+      if (n === undefined) {
+        throw new Errors.BadRequestError(`Bad character '${r}'`);
+      }
+      return n;
+    }
+
+    function validateCannotGoUp(curr: number, prev: number) {
+      if (curr > prev) {
+        throw new Errors.BadRequestError(`Cannot go up: ${prev} to ${curr}`);
+      }
+    }
+
+    /**
+     * When increasing values from left-to-right test for valid subtractive.
+     * @param prev
+     * @param current
+     * @param next
+     */
+    function validateSubtractive(prev: number, current: number, next: number) {
+      if (![X, I, C].includes(current)) {
+        throw new Errors.BadRequestError('Only X, I, and C can be subtractive');
+      } else {
+        // Can do XIX, but not VIX.
+        validateCannotGoUp(next, least);
+      }
+    }
 
     for (let i = 0; i < roman.length; i++) {
-      const n: number = romanToNumber[roman.charAt(i)];
-      if (n === undefined) {
-        throw new Errors.BadRequestError('Bad character zzzzz');
-      }
-      // Look ahead for subtraction like IX
-      const next: string = roman.charAt(i + 1);
-      if (!next) {
-        if (n > last) {
-          throw new Errors.BadRequestError('Cannot go up');
-        }
-        // last = n;  // Done
-        ret += n;
+      const current: number = validatingRomanToNumber(roman.charAt(i));
+      validateCannotGoUp(current, least);
+      const next =
+        i + 1 >= roman.length
+          ? 0
+          : validatingRomanToNumber(roman.charAt(i + 1));
+
+      if (next <= current) {
+        validateCannotGoUp(current, least);
+        ret += current;
+        least = current;
       } else {
-        const m = romanToNumber[next];
-        if (!m) {
-          throw new Errors.BadRequestError('Bad next character');
-        } else if (m > n) {
-          // TODO: This needs some limits on how it is used.
-          if (![X, I, C].includes(n) && m > n) {
-            // Only X, I, C can be subtractive
-            throw new Errors.BadRequestError('Cannot go up: ' + roman);
-          } else if (m === V && m >= last) {
-            // Cannot go up or do VIV
-            throw new Errors.BadRequestError('Cannot go up: ' + roman);
-          } else if (m === X && m > last) {
-            // Cannot go up, but can do XIX
-            throw new Errors.BadRequestError('Cannot go up: ' + roman);
-          }
-          ret += m;
-          ret -= n;
-          i++;
-          last = m - n;
-        } else {
-          if (n > last) {
-            throw new Errors.BadRequestError('Cannot go up: ' + roman);
-          }
-          last = n;
-          ret += n;
-        }
+        validateSubtractive(least, current, next);
+        ret -= current; // subtractive
+        ret += next; // add next
+        i++; // eat next
+        least = next - current;
       }
     }
 
+    // Lastly, catch silly invalid input that could get through the above code.
     // Numbers over 3999 are not valid with our rules
     if (ret > 3999) {
-      throw new Errors.BadRequestError();
+      throw new Errors.BadRequestError('Exceeds 3999');
     }
-
     // Reject if it had 4 in a row of anything
     const fours = ['MMMM', 'DDDD', 'CCCC', 'LLLL', 'XXXX', 'VVVV', 'IIII'];
     if (fours.some((four) => roman.includes(four))) {
-      throw new Errors.BadRequestError();
+      throw new Errors.BadRequestError(
+        'Cannot repeat a character 4 times in a row'
+      );
+    }
+    // Reject if it had 4 in a row of anything
+    const singles = ['L', 'V', 'D'];
+    if (singles.some((single) => roman.split(single).length > 2)) {
+      throw new Errors.BadRequestError(
+        'Characters L, V, and D can only be used once'
+      );
     }
 
     return ret;
