@@ -1,182 +1,128 @@
 import { ConverterApi } from './converter.api';
-import { Inject } from 'typescript-ioc';
-import { LoggerApi } from '../logger';
 import { Errors } from 'typescript-rest';
 
+// Roman numerals are a number system used by the Roman Empire, based on letters M D C L X V I.
+// "My Dear Cat Loves eXtra Vitamins Intensely" just might help you remember them in order.
+// Each of these letters is assigned a value:
+
 const M = 1000; // my
-const CM = 900;
 const D = 500; // dear
-const CD = 400;
 const C = 100; // cat
-const XC = 90; //
-const LC = 50; //
 const L = 50; // loves
-const XL = 40;
 const X = 10; // extra
-const IX = 9;
 const V = 5; // vitamins
+const I = 1; // intensely(?)
+
+// ...and you represent numbers by combining these letters:
+/** This sparse array maps number (array index) to Roman for
+ *  base characters, 0, 1-21, and other significant and common combinations.
+ */
+const numberToRoman = [];
+numberToRoman[I] = 'I';
+numberToRoman[2] = 'II';
+numberToRoman[3] = 'III';
+numberToRoman[4] = 'IV';
+numberToRoman[V] = 'V';
+numberToRoman[6] = 'VI';
+numberToRoman[7] = 'VII';
+numberToRoman[8] = 'VIII';
+numberToRoman[9] = 'IX';
+numberToRoman[X] = 'X';
+numberToRoman[11] = 'XI';
+numberToRoman[12] = 'XII';
+numberToRoman[13] = 'XIII';
+numberToRoman[14] = 'XIV';
+numberToRoman[15] = 'XV';
+numberToRoman[16] = 'XVI';
+numberToRoman[17] = 'XVII';
+numberToRoman[18] = 'XVIII';
+numberToRoman[19] = 'XIX';
+numberToRoman[20] = 'XX';
+numberToRoman[21] = 'XXI';
+
+// There is no Roman Numeral for the number 0, instead they wrote nulla (the Latin word meaning none).
+
+numberToRoman[0] = 'nulla';
+
+// Add the higher base characters M, D, C, and L
+
+numberToRoman[L] = 'L';
+numberToRoman[C] = 'C';
+numberToRoman[D] = 'D';
+numberToRoman[M] = 'M';
+
+// Roman numerals are read left to right, with higher values being placed before lower values.
+// To get the number represented by the numeral add the individual values together.
+// One exception to this rule is when you want a 4 or 9.
+// Roman Numbers don't allow more than 3 consecutive occurrences of the same letter,
+// so you take the next value up and subtract 1.
+// So for 4 you use the letter for 5 = V and subtract 1, which appears before the V to give IV,
+// similarly for 9 you take 10 and subtract 1 to give IX.
+// This also works for 40 (XL), 90 (XC), 400 (CD) and 900 (CM).
+
+const CM = 900;
+const CD = 400;
+const XC = 90;
+const XL = 40;
+const IX = 9;
 const IV = 4;
-const I = 1; // intensely?
 
-// Quick look-up sparse array mappings the base chars and combos (number to roman)
-const sparseN2R = [];
-sparseN2R[0] = 'nulla';
-sparseN2R[I] = 'I';
-sparseN2R[2] = 'II';
-sparseN2R[3] = 'III';
-sparseN2R[IV] = 'IV';
-sparseN2R[V] = 'V';
-sparseN2R[6] = 'VI';
-sparseN2R[7] = 'VII';
-sparseN2R[8] = 'VIII';
-sparseN2R[IX] = 'IX';
-sparseN2R[X] = 'X';
-sparseN2R[11] = 'XI';
-sparseN2R[12] = 'XII';
-sparseN2R[13] = 'XIII';
-sparseN2R[14] = 'XIV';
-sparseN2R[15] = 'XV';
-sparseN2R[16] = 'XVI';
-sparseN2R[17] = 'XVII';
-sparseN2R[18] = 'XVIII';
-sparseN2R[19] = 'XIX';
-sparseN2R[20] = 'XX';
-sparseN2R[21] = 'XXI';
-sparseN2R[L] = 'L';
-sparseN2R[C] = 'C';
-sparseN2R[D] = 'D';
-sparseN2R[M] = 'M';
-sparseN2R[40] = 'XL';
-sparseN2R[50] = 'LC';
-sparseN2R[90] = 'XC';
-sparseN2R[400] = 'CD';
-sparseN2R[900] = 'CM';
-// console.log("SPARSE: ", sparseN2R);
+// Add the common combinations to the quick look-up sparse array (0-21 already added)
 
-// const r2nMap : Map<string, number> = new Map([
-// 'I':1,II:2,III:3,IV:4,V:5,VI:6,VII:7,VIII:8,IX:9,X:10,
-// 'XI':11,XII:12,XIII:13,XIV:14,XV:15,XVI:16,XVII:17,XVIII:18,XIX:19,XX:20,XXI:21,
-// C:100,D:500,L:50,M:1000,
-// XL:40,XC:90,CD:400,CM:900
-// };
-//
+numberToRoman[XL] = 'XL';
+numberToRoman[XC] = 'XC';
+numberToRoman[CD] = 'CD';
+numberToRoman[CM] = 'CM';
 
-// TODO: My intention was to build the N2R from R2N or vice versa
-// TODO: Also I guess if I do a typescript map, I need to change this (and maybe can use map instead of sparse array above)
-const r2nMap = {
-  nulla: 0,
-  I: 1,
-  II: 2,
-  III: 3,
-  IV: 4,
-  V: 5,
-  VI: 6,
-  VII: 7,
-  VIII: 8,
-  IX: 9,
-  X: 10,
-  XI: 11,
-  XII: 12,
-  XIII: 13,
-  XIV: 14,
-  XV: 15,
-  XVI: 16,
-  XVII: 17,
-  XVIII: 18,
-  XIX: 19,
-  XX: 20,
-  XXI: 21,
-  C: 100,
-  D: 500,
-  L: 50,
-  M: 1000,
-  XL: 40,
-  XC: 90,
-  CD: 400,
-  CM: 900,
-};
+/** A map for common Roman-to-number conversions built from the number-to-Roman sparse array. */
+const romanToNumber = {};
+numberToRoman.map((r, n) => {
+  romanToNumber[r] = n;
+});
 
 export class ConverterService implements ConverterApi {
-  logger: LoggerApi;
+  /**
+   * Generate a Roman numeral string from a number.
+   * @param n
+   */
+  #numberToRomanUsingMath(n: number): string {
+    let remainder: number = n; // NOTE: Using number instead of bigint means we need to be careful of float ops
 
-  constructor(
-    @Inject
-    logger: LoggerApi
-  ) {
-    this.logger = logger.child('ConverterService');
-  }
+    // List of chars/combos to loop through in order (big to small) for calculation.
+    const romans: number[] = [M, CM, D, CD, C, XC, L, XL, X, IX, V, IV, I];
 
-  numberToRomanWithMath(n: number): string {
-    // NOTE: Using number instead of bigint means we need to be careful of float ops
+    // How many of each Roman character/combo (above) we need (big to small).
+    const times: number[] = [];
 
-    const m = Math.trunc(n / M);
-    let remainder = n % M;
+    // Determine how many times each Roman character/combo is needed.
+    romans.forEach((r) => {
+      times.push(Math.trunc(remainder / r));
+      remainder = remainder % r;
+    });
 
-    const cm = Math.trunc(remainder / CM);
-    remainder = remainder - cm * CM; // Just subtract the one, if any
-
-    const d = Math.trunc(remainder / D);
-    remainder = remainder % D;
-
-    const cd = Math.trunc(remainder / CD);
-    remainder = remainder - cd * CD; // Just subtract the one, if any
-
-    const c = Math.trunc(remainder / C);
-    remainder = remainder % C;
-
-    const lc = Math.trunc(remainder / LC);
-    remainder = remainder - lc * LC; // Just subtract the one, if any
-
-    const xc = Math.trunc(remainder / XC);
-    remainder = remainder - xc * XC; // Just subtract the one, if any
-
-    const l = Math.trunc(remainder / L);
-    remainder = remainder % L;
-
-    const xl = Math.trunc(remainder / XL);
-    remainder = remainder - xl * XL; // Just subtract the one, if any
-
-    const x = Math.trunc(remainder / X);
-    remainder = remainder % X;
-
-    const ix = Math.trunc(remainder / IX);
-    remainder = remainder - ix * IX; // Just subtract the one, if any
-
-    const v = Math.trunc(remainder / V);
-    remainder = remainder % V;
-
-    const iv = Math.trunc(remainder / IV);
-    remainder = remainder - iv * IV; // Just subtract the one, if any
-
-    const i = Math.trunc(remainder / I);
-
+    // The Roman numeral string to return
     let ret = '';
-    ret += 'M'.repeat(m);
-    ret += 'CM'.repeat(cm);
-    ret += 'D'.repeat(d);
-    ret += 'CD'.repeat(cd);
-    ret += 'C'.repeat(c);
-    ret += 'LC'.repeat(lc);
-    ret += 'L'.repeat(l);
-    ret += 'XL'.repeat(xl);
-    ret += 'X'.repeat(x);
-    ret += 'IX'.repeat(ix);
-    ret += 'V'.repeat(v);
-    ret += 'IV'.repeat(iv);
-    ret += 'I'.repeat(i);
 
-    // console.log("RETURNING: ", ret, " FOR ", n);
+    // Build the Roman numeral string to return
+    times.forEach((count, idx) => {
+      ret += numberToRoman[romans[idx]].repeat(count);
+    });
+
     return ret;
   }
 
-  leftToRight(roman: string): number {
+  /**
+   * Left-to-right calculation (and validation) of number value given a Roman numeral string.
+   * @param roman
+   */
+  #romanToNumberUsingMath(roman: string): number {
     let ret = 0;
     let last = Number.MAX_VALUE;
 
     for (let i = 0; i < roman.length; i++) {
-      const n: number = r2nMap[roman.charAt(i)];
-      if (!n) {
-        throw new Errors.BadRequestError();
+      const n: number = romanToNumber[roman.charAt(i)];
+      if (n === undefined) {
+        throw new Errors.BadRequestError('Bad character zzzzz');
       }
       // Look ahead for subtraction like IX
       const next: string = roman.charAt(i + 1);
@@ -187,17 +133,20 @@ export class ConverterService implements ConverterApi {
         // last = n;  // Done
         ret += n;
       } else {
-        const m = r2nMap[next];
+        const m = romanToNumber[next];
         if (!m) {
-          throw new Errors.BadRequestError('Cannot go up');
+          throw new Errors.BadRequestError('Bad next character');
         } else if (m > n) {
           // TODO: This needs some limits on how it is used.
-          if (m === V && m >= last) {
+          if (![X, I, C].includes(n) && m > n) {
+            // Only X, I, C can be subtractive
+            throw new Errors.BadRequestError('Cannot go up: ' + roman);
+          } else if (m === V && m >= last) {
             // Cannot go up or do VIV
-            throw new Errors.BadRequestError('Cannot go up');
+            throw new Errors.BadRequestError('Cannot go up: ' + roman);
           } else if (m === X && m > last) {
             // Cannot go up, but can do XIX
-            throw new Errors.BadRequestError('Cannot go up');
+            throw new Errors.BadRequestError('Cannot go up: ' + roman);
           }
           ret += m;
           ret -= n;
@@ -205,7 +154,7 @@ export class ConverterService implements ConverterApi {
           last = m - n;
         } else {
           if (n > last) {
-            throw new Errors.BadRequestError('Cannot go up');
+            throw new Errors.BadRequestError('Cannot go up: ' + roman);
           }
           last = n;
           ret += n;
@@ -228,21 +177,21 @@ export class ConverterService implements ConverterApi {
   }
 
   toNumber(roman: string): number {
-    this.logger.info(`toNumber from: ${roman}`);
     if (!roman) {
-      throw new Errors.BadRequestError();
+      throw new Errors.BadRequestError(
+        'A non-empty Roman numeral string is required'
+      );
     }
-    const n: number = r2nMap[roman];
-    return Number.isInteger(n) ? n : this.leftToRight(roman); // isInteger() here distinguishes 0 from undefined
+    const n: number = romanToNumber[roman];
+    return Number.isInteger(n) ? n : this.#romanToNumberUsingMath(roman); // isInteger() here distinguishes 0 from undefined
   }
 
   toRoman(n: number): string {
-    this.logger.info('toRoman from: ${n}');
-
     if (!Number.isInteger(n) || n < 0 || n >= 4000) {
-      throw new Errors.BadRequestError();
+      throw new Errors.BadRequestError('Only integers from 0-3999 are allowed');
     }
 
-    return sparseN2R[n] || this.numberToRomanWithMath(n);
+    // Try a quick lookup for base chars and common strings, else calculate.
+    return numberToRoman[n] || this.#numberToRomanUsingMath(n);
   }
 }
