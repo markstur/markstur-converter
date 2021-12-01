@@ -1,7 +1,7 @@
 import { Container } from 'typescript-ioc';
 import { BadRequestError } from 'typescript-rest/dist/server/model/errors';
 
-import { ConverterService } from '../../src/services/converter.service';
+import { ConverterService } from '../../src/services';
 
 describe('Converter service', () => {
   let service: ConverterService;
@@ -174,15 +174,41 @@ describe('Converter service', () => {
     });
   });
 
+  describe('Only I, X, and C can be used as subtractive numerals', () => {
+    context('when given LC', () => {
+      test('toNumber(LC) should result in throw 400', () => {
+        expect(() => service.toNumber('LC')).toThrow(BadRequestError);
+      });
+    });
+    context('when given CM', () => {
+      test('toNumber(CM) should result in 900', () => {
+        expect(service.toNumber('CM')).toBe(900);
+      });
+    });
+    context('when given XL', () => {
+      test('toNumber(XL) should result in 50', () => {
+        expect(service.toNumber('XL')).toBe(40);
+      });
+    });
+    context('when given VX', () => {
+      test('toNumber(VX) should result in throw 400', () => {
+        expect(() => service.toNumber('VX')).toThrow(BadRequestError);
+      });
+    });
+    context('when given IV', () => {
+      test('toNumber(IV) should result in 4', () => {
+        expect(service.toNumber('IV')).toBe(4);
+      });
+    });
+  });
+
   // TODO: Not really testing for increasing letters to the right (enforcing left-to-right rules)
   // TODO: Not testing for repeating a subtraction car like IIIV.
   // TODO: Not testing for repeating a subtraction car like IIIV.
-
   // TODO: *** The internet found some more rules that were not part of the assignment ***
   // TODO: The letters I, X, C can be repeated thrice in succession. Additionally, L, V, D cannot be repeated or the number is considered to be invalid.
   // TODO: If a lower value digit is written to the left of a higher value digit, it is subtracted.
   // TODO: If a lower value digit is written to the right of a higher value digit, it is added.
-  // TODO: Only I, X, and C can be used as subtractive numerals.
 
   //
   describe('Given INVALID toNumber(string)', () => {
@@ -203,10 +229,10 @@ describe('Converter service', () => {
         expect(() => service.toNumber('X I')).toThrow(BadRequestError);
       });
       test('"X.I" returns throw 400', () => {
-        expect(() => service.toNumber('X I')).toThrow(BadRequestError);
+        expect(() => service.toNumber('X.I')).toThrow(BadRequestError);
       });
       test('"XvI" returns throw 400', () => {
-        expect(() => service.toNumber('X I')).toThrow(BadRequestError);
+        expect(() => service.toNumber('XvI')).toThrow(BadRequestError);
       });
     });
   });
@@ -239,9 +265,8 @@ describe('Converter service', () => {
     });
   });
 
-  // TODO: Determine if floats w/ only zeros after decimal are OK
-  describe('DOT-ZERO floats are okay??? toRoman(n.0)', () => {
-    context('when non-integer numbers are provided', () => {
+  describe('DOT-ZERO floats are OKAY. toRoman(n.0)', () => {
+    context('when non-integer dot-zero numbers are provided', () => {
       test('0.0 is not undefined', async () => {
         expect(service.toRoman(0.0)).not.toEqual(undefined);
       });
@@ -251,10 +276,19 @@ describe('Converter service', () => {
     });
   });
 
+  describe('Invalid chars result in a BadRequestError', () => {
+    context('when given Z', () => {
+      test('Z gets BadRequestError', () => {
+        expect(() => service.toNumber('Z')).toThrow(
+          new BadRequestError("Bad character 'Z'")
+        );
+      });
+    });
+  });
+
   describe('INVERSE FUNCTIONS SO n == toNumber(toRoman(n))', () => {
     context('0-39 toRoman and back toNumber', () => {
-      // HINT: try 3999!
-      test.each(Array.from(Array(40).keys()))(
+      test.each(Array.from(Array(4000).keys()))(
         'toNumber(toRoman(n)) should result in self n=%s',
         (n) => {
           expect(service.toNumber(service.toRoman(n))).toBe(n);
