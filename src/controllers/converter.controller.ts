@@ -16,15 +16,15 @@ export class ConverterController {
 
   @Path('to-number')
   @GET
-  toNumber(@QueryParam('value') value: string): object {
+  toNumber(@QueryParam('value') value: string): number {
     this.logger.info(`To number from ${value}`);
-    return { value: this.service.toNumber(value) };
+    return this.service.toNumber(value);
   }
 
   @Path('to-roman')
   @GET
-  toRoman(@QueryParam('value') value: number): object {
+  toRoman(@QueryParam('value') value: number): string {
     this.logger.info(`To Roman from ${value}`);
-    return { value: this.service.toRoman(value) };
+    return this.service.toRoman(value);
   }
 }
