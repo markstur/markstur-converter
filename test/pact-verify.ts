@@ -22,13 +22,13 @@ const pactBrokerUrl = process.env.PACTBROKER_URL || opts.pactBrokerUrl;
 
 async function buildOptions(): Promise<VerifierOptions> {
   const stateHandlers = {
-    "base state": () => {
-      console.log("BASE STATE: no setup needed");
+    'base state': () => {
+      console.log('BASE STATE: no setup needed');
     },
-    "other state": () => {
-      console.log("OTHER STATE: setup here when needed");
+    'other state': () => {
+      console.log('OTHER STATE: setup here when needed');
     },
-  }
+  };
 
   const pactUrls = await listPactFiles(path.join(process.cwd(), 'pacts'));
   if (!pactBrokerUrl && pactUrls.length === 0) {
