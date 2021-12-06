@@ -76,7 +76,7 @@ numberToRoman[CM] = 'CM';
 
 /** A map for common Roman-to-number conversions built from the number-to-Roman sparse array. */
 const romanToNumber = {};
-numberToRoman.map((r, n) => {
+numberToRoman.forEach((r, n) => {
   romanToNumber[r] = n;
 });
 
