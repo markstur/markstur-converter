@@ -114,6 +114,11 @@ describe('Converter service', () => {
         expect(await service.toNumber('MMMCMXCIX')).toBe(3999);
       });
     });
+    context('when given nulla, NULLA, nUlLa', () => {
+      test.each(['nulla', 'NULLA', 'nUlLa'])('toNumber(%s) should result in 0', async (s) => {
+        expect(await service.toNumber(s)).toBe(0);
+      });
+    });
   });
 
   describe('More than 3 in a row is not allowed', () => {
@@ -200,6 +205,11 @@ describe('Converter service', () => {
         expect(service.toNumber('IV')).toBe(4);
       });
     });
+    context('when given VALID MIXED CASE', () => {
+      test('"XvI" returns 16 despite my objections to mixed case Roman numerals', () => {
+        expect(service.toNumber('XvI')).toBe(16);
+      });
+    });
   });
 
   // TODO: Not really testing for increasing letters to the right (enforcing left-to-right rules)
@@ -230,9 +240,6 @@ describe('Converter service', () => {
       });
       test('"X.I" returns throw 400', () => {
         expect(() => service.toNumber('X.I')).toThrow(BadRequestError);
-      });
-      test('"XvI" returns throw 400', () => {
-        expect(() => service.toNumber('XvI')).toThrow(BadRequestError);
       });
     });
   });
