@@ -1,5 +1,5 @@
-import { ConverterApi } from './converter.api';
-import { Errors } from 'typescript-rest';
+import {ConverterApi} from './converter.api';
+import {Errors} from 'typescript-rest';
 
 // Roman numerals MDCLXVI are each assigned a value:
 
@@ -39,7 +39,6 @@ const numberToRoman = Object.entries(romanToNumber).reduce((n2r, [r, n]) => {
 }, []);
 
 export class ConverterService implements ConverterApi {
-
   /**
    * Left-to-right calculation (and validation) of number value given a Roman numeral string.
    * @param roman
@@ -50,32 +49,27 @@ export class ConverterService implements ConverterApi {
 
     roman = roman.toUpperCase(); // We allow mixed-case now. IKR!
 
-    function validatingRomanToNumber(r: string) {
-      const n = romanToNumber[r];
-      if (n === undefined) {
-        throw new Errors.BadRequestError(`Bad character '${r}'`);
-      }
-      return n;
+    function throwInvalidChar(r: string) {
+      throw new Errors.BadRequestError(`Invalid Roman character '${r}'`);
     }
 
-    function validateCannotGoUp(curr: number, prev: number) {
-      if (curr > prev) {
-        throw new Errors.BadRequestError(`Cannot go up: ${prev} to ${curr}`);
-      }
+    /**
+     * Throw increasing values from left-to-right (using prev to next for subtractives).
+     * @param current
+     * @param next
+     * @param least
+     */
+    function throwIncreasingChar(curr: number, next: number, least: number) {
+      throw new Errors.BadRequestError(`Cannot go up: ${this.numberToRoman(least)} to ${this.numberToRoman(Math.max(curr, next))}`);
     }
 
     /**
      * When increasing values from left-to-right test for valid subtractive.
-     * @param prev
-     * @param current
-     * @param next
+     * @param n
      */
-    function validateSubtractive(prev: number, current: number, next: number) {
-      if (![X, I, C].includes(current)) {
+    function throwInvalidSub(n: number) {
+      if (![X, I, C].includes(n)) {
         throw new Errors.BadRequestError('Only X, I, and C can be subtractive');
-      } else {
-        // Can do XIX, but not VIX.
-        validateCannotGoUp(next, least);
       }
     }
 
@@ -84,21 +78,20 @@ export class ConverterService implements ConverterApi {
       return 0;
     }
 
-    for (let i = 0; i < roman.length; i++) {
-      const current: number = validatingRomanToNumber(roman.charAt(i));
-      validateCannotGoUp(current, least);
-      const next =
-        i + 1 >= roman.length
-          ? 0
-          : validatingRomanToNumber(roman.charAt(i + 1));
+    // Validate characters and convert to numbers
+    const numbers = [...roman].map(r => romanToNumber[r] || throwInvalidChar(r));
+    for (let i = 0; i < numbers.length; i++) {
+      let current = numbers[i];
+      const next = numbers[i + 1] || 0;
+      if (Math.max(current, next) > least) throwIncreasingChar(current, next, least);
 
       if (next > current) {
-        validateSubtractive(least, current, next);
-        least = next - current;
-        i++; // eat next
-      } else {
-        least = current;
+        // Handle subtractives (this char subtracted from next char)
+        if (![X, I, C].includes(current)) throwInvalidSub(current);
+        current = next - current;
+        i++; // take both chars
       }
+      least = current;
       ret += least;
     }
 

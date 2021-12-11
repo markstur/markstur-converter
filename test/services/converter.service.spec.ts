@@ -115,9 +115,12 @@ describe('Converter service', () => {
       });
     });
     context('when given nulla, NULLA, nUlLa', () => {
-      test.each(['nulla', 'NULLA', 'nUlLa'])('toNumber(%s) should result in 0', async (s) => {
-        expect(await service.toNumber(s)).toBe(0);
-      });
+      test.each(['nulla', 'NULLA', 'nUlLa'])(
+        'toNumber(%s) should result in 0',
+        async (s) => {
+          expect(await service.toNumber(s)).toBe(0);
+        }
+      );
     });
   });
 
@@ -287,7 +290,7 @@ describe('Converter service', () => {
     context('when given Z', () => {
       test('Z gets BadRequestError', () => {
         expect(() => service.toNumber('Z')).toThrow(
-          new BadRequestError("Bad character 'Z'")
+          new BadRequestError("Invalid Roman character 'Z'")
         );
       });
     });
